@@ -1,0 +1,99 @@
+<news:item tag="cc:card" class="flex p-2 my-2">
+  <style>
+  a {
+    color:${ props.css.foreground(props.theme.surface) };
+  }
+  </style>
+  <script>
+	/* Compute time difference between two Unix timestamps */
+	function timeDiff(time,ref) {
+		if (!ref)
+			// Get current time if second argument is not specified
+			ref=new Date().getTime()/1e3;
+		let diff=time-ref,
+        abs=Math.abs(diff);
+		if (!abs)
+			return 'Just now';
+		let when=diff>0?'from now':'ago',
+        units={
+          year:31.536e6,
+          month:2.592e6,
+          week:604.8e3,
+          day:86.4e3,
+          hour:3.6e3,
+          minute:60
+        },
+        unit;
+		for (let i in units)
+			if (abs>=units[i]) {
+        unit=Math.trunc(abs/units[i]);
+				return /day/.test(i) && !(unit-1)?
+					(diff>0?'tomorrow':'yesterday'):
+					(unit+' '+i+((unit-1)?'s':'')+' '+when);
+      }
+    unit=Math.trunc(abs);
+		return unit+' second'+((unit-1)?'s':'')+' '+when;
+	}
+
+  // Extract RSS elements
+  let desc=props.item.querySelector('description'),
+      photo=props.item.querySelector('content'),
+      pub=new Date(props.item.querySelector('pubDate').textContent),
+      tmp=document.createElement('template');
+  tmp.innerHTML=(
+    desc.textContent.
+      replace(/<(\/)?ol>/,'<$1ul>').
+      replace(/&nbsp;/g,' ')
+  );
+  if (/^ul/i.test(tmp.content.firstElementChild.tagName)) {
+    // Restructure HTML
+    let first=tmp.content.querySelector('li:first-child'),
+        frag=document.createDocumentFragment();
+    while (first.firstChild)
+      frag.appendChild(first.firstChild);
+    tmp.content.insertBefore(frag,tmp.content.firstElementChild);
+    first.remove();
+    // Remove link to Google News page
+    tmp.content.querySelector('li:last-child').remove();
+  }
+
+  // Tweak formatting
+  tmp.content.querySelectorAll('strong').forEach(function(element) {
+    element.remove();
+  });
+  tmp.content.querySelectorAll('p,ul').forEach(function(element) {
+    element.setAttribute('class','small mt-1 mb-0');
+    if (element.matches('ul'))
+      element.classList.add('pl-2');
+  });
+  tmp.content.querySelectorAll('font').forEach(function(element) {
+    element.setAttribute('class','text-muted nobr');
+    element.removeAttribute('color');
+    if (!element.parentElement) {
+      element.classList.add('small');
+      // Add human-readable timestamp
+      element.innerHTML+=' · '+timeDiff(pub.getTime()/1e3);
+    }
+  });
+
+  // Wrap news item in a div element
+  let div=document.createElement('div');
+  div.setAttribute('class','grow');
+  div.appendChild(tmp.content);
+  this.expose().appendChild(div);
+
+  if (photo) {
+    let img=document.createElement('img');
+    img.setAttribute('src',photo.getAttribute('url'));
+    img.setAttribute('width',96);
+    img.setAttribute('height',72);
+    img.style.objectFit='cover';
+    img.setAttribute('class','noflex ml-2');
+    img.addEventListener('error',function() {
+      // Hide broken links
+      img.style.display='none';
+    });
+    this.expose().appendChild(img);
+  }
+  </script>
+</news:item>

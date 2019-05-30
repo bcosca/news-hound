@@ -1,0 +1,28 @@
+{
+  "name": "news-hound",
+  "version": "2.0.0",
+  "description": "News Hound: World-wide aggregated news feed",
+  "keywords": [
+    "news",
+    "rss"
+  ],
+  "main": "index.html",
+  "scripts": {},
+  "author": "Bong Cosca <bong.cosca@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bcosca/news-hound.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bcosca/news-hound/issues"
+  },
+  "devDependencies": {
+    "brunch": "^2.10.17",
+    "cssnano-brunch": "^1.1.8",
+    "eslint-brunch": "^3.12.0",
+    "roadshow-brunch": "^0.2.0",
+    "terser-brunch": "^3.0.0"
+  },
+  "dependencies": {}
+}

@@ -1,0 +1,88 @@
+<news:layout tag="cc:basecoat">
+  <main tag="cc:main" class="col" ref="main">
+    <header tag="cc:sheet" class="top" ref="top">
+      <div tag="cc:appbar" class="primary" ref="appbar">
+        <a class="title ml-1 mr-auto" href=".">${ document.title }</a>
+        <a class="mx-1" href="#" ref="reload"><i class="icon icon-refresh infinite"></i></a>
+      </div>
+    </header>
+    <div tag="cc:progress" class="indeterminate" ref="progress"></div>
+    <div class="container" ref="content"></div>
+    <footer tag="cc:sheet" class="bottom" ref="bottom">
+      <div tag="cc:snackbar" ref="snackbar">
+        <div class="py-1 ml-1 mr-auto">Support further development of ${ props.app.brand }. Your donations help keep this project ad-free.</div>
+        <a tag="cc:button" class="primary solid ml-2 mr-1" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3VSK6CKUYZRBL&source=url" target="_blank">Donate</a>
+      </div>
+    </footer>
+  </main>
+  <style>
+  html,body {
+    width:480px;
+    scrollbar-color:var(--shaded) transparent;
+    scrollbar-width:thin;
+  }
+  img {
+    background-color:var(--shaded);
+  }
+  p:empty {
+    display:none;
+  }
+  </style>
+  <script>
+  document.title=props.app.brand;
+
+  let self=this,
+      timeout;
+
+  this.once('ready',function() {
+    let icon=refs.reload.find('.icon').shift().expose();
+    function rss() {
+      let xhr=new XMLHttpRequest();
+      xhr.open('GET','https://news.google.com/rss');
+      xhr.addEventListener('load',function() {
+        refs.progress.expose().remove();
+        let xml=xhr.responseXML,
+            url=xml.querySelector('channel>link'),
+            stamp=xml.querySelector('lastBuildDate'),
+            content=refs.content.expose();
+        xml.querySelectorAll('channel>item').forEach(function(item) {
+          content.appendChild(document.createElement('div'));
+          self.getRef(content.lastElementChild).
+            inject({ item }).
+            addTag('news:item').
+            load();
+        });
+        icon.classList.remove('spin');
+        // Show snackbar at random times (1:3 probability)
+        if (!Math.floor(Math.random()*Math.floor(3))) {
+          refs.snackbar.emit('snackbar:show');
+          clearTimeout(timeout);
+          timeout=setTimeout(function() {
+            refs.snackbar.emit('snackbar:hide');
+          },30e3);
+        }
+      });
+      xhr.addEventListener('error',function() {
+        console.log(xhr);
+      });
+      xhr.send();
+    }
+    this.inject({
+      layout:this,
+      snackbar:refs.snackbar,
+      main:refs.main
+    });
+    let content=refs.content.expose();
+    refs.reload.
+      on('click',function(e) {
+        e.preventDefault();
+        icon.classList.add('spin');
+        while (content.firstChild)
+          content.firstChild.remove();
+        rss();
+      }.bind(this)).
+      emit('click');
+  });
+  </script>
+</news:layout>
+
