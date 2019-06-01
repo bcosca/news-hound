@@ -1,7 +1,7 @@
 {
 
 	"name":"News Hound",
-	"version":"0.9.0",
+	"version":"0.9.2",
 	"description":"Up-to-date news aggregated from thousands of blogs, newspapers, and magazines around the Web.",
 
 	"browser_action":{
@@ -10,6 +10,7 @@
 		"default_title":"News Hound",
 		"default_popup":"/index.html"
 	},
+  "default_locale":"en",
 	"icons":{
     "128":"/pub/icons/icon-128.png"
 	},
