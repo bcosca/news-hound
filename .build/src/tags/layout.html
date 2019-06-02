@@ -5,15 +5,16 @@
         <a class="title ml-1 mr-auto" href=".">${ document.title }</a>
         <a class="mx-1" href="#" ref="reload"><i class="icon icon-refresh infinite"></i></a>
       </div>
+      <div tag="cc:banner" class="reverse block">
+        <div class="m-1">Support further development of ${ props.app.brand }. Your donations help keep this project ad-free.</div>
+        <div class="flex m-1">
+          <a tag="cc:button" class="outlined ml-auto mr-1" href="https://www.patreon.com/bePatron?u=20757210" target="_blank">Become a Patron!</a>
+          <a tag="cc:button" class="primary light solid ml-1" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3VSK6CKUYZRBL&source=url" target="_blank">Donate</a>
+        </div>
+      </div>
     </header>
     <div tag="cc:progress" class="indeterminate" ref="progress"></div>
     <div class="container" ref="content"></div>
-    <footer tag="cc:sheet" class="bottom" ref="bottom">
-      <div tag="cc:snackbar" ref="snackbar">
-        <div class="py-1 ml-1 mr-auto">Support further development of ${ props.app.brand }. Your donations help keep this project ad-free.</div>
-        <a tag="cc:button" class="primary solid ml-2 mr-1" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3VSK6CKUYZRBL&source=url" target="_blank">Donate</a>
-      </div>
-    </footer>
   </main>
   <style>
   html,body {
@@ -53,14 +54,6 @@
             load();
         });
         icon.classList.remove('spin');
-        // Show snackbar at random times (1:3 probability)
-        if (!Math.floor(Math.random()*Math.floor(3))) {
-          refs.snackbar.emit('snackbar:show');
-          clearTimeout(timeout);
-          timeout=setTimeout(function() {
-            refs.snackbar.emit('snackbar:hide');
-          },30e3);
-        }
       });
       xhr.addEventListener('error',function() {
         console.log(xhr);
@@ -69,7 +62,6 @@
     }
     this.inject({
       layout:this,
-      snackbar:refs.snackbar,
       main:refs.main
     });
     let content=refs.content.expose();
