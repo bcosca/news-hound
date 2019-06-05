@@ -1,18 +1,6 @@
 <news:layout tag="cc:basecoat">
   <main tag="cc:main" class="col" ref="main">
-    <header tag="cc:sheet" class="top" ref="top">
-      <div tag="cc:appbar" class="primary" ref="appbar">
-        <a class="title ml-1 mr-auto" href=".">${ document.title }</a>
-        <a class="mx-1" href="#" ref="reload"><i class="icon icon-refresh infinite"></i></a>
-      </div>
-      <div tag="cc:banner" class="reverse block">
-        <div class="m-1">Support further development of ${ props.app.brand }. Your donations help keep this project ad-free.</div>
-        <div class="flex m-1">
-          <a tag="cc:button" class="outlined ml-auto mr-1" href="https://www.patreon.com/bePatron?u=20757210" target="_blank">Become a Patron!</a>
-          <a tag="cc:button" class="primary light solid ml-1" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3VSK6CKUYZRBL&source=url" target="_blank">Donate</a>
-        </div>
-      </div>
-    </header>
+    <header tag="news:header" class="top" ref="top"></header>
     <div tag="cc:progress" class="indeterminate" ref="progress"></div>
     <div class="container" ref="content"></div>
   </main>
@@ -32,20 +20,18 @@
   <script>
   document.title=props.app.brand;
 
-  let self=this,
-      timeout;
+  let self=this;
 
   this.once('ready',function() {
-    let icon=refs.reload.find('.icon').shift().expose();
+    let progress=refs.progress.expose(),
+        content=refs.content.expose();
     function rss() {
       let xhr=new XMLHttpRequest();
       xhr.open('GET','https://news.google.com/rss');
       xhr.addEventListener('load',function() {
-        refs.progress.expose().remove();
         let xml=xhr.responseXML,
             url=xml.querySelector('channel>link'),
-            stamp=xml.querySelector('lastBuildDate'),
-            content=refs.content.expose();
+            stamp=xml.querySelector('lastBuildDate');
         xml.querySelectorAll('channel>item').forEach(function(item) {
           content.appendChild(document.createElement('div'));
           self.getRef(content.lastElementChild).
@@ -53,27 +39,28 @@
             addTag('news:item').
             load();
         });
-        icon.classList.remove('spin');
+        progress.style.display='none';
+        refs.top.emit('icon:stop');
       });
       xhr.addEventListener('error',function() {
-        console.log(xhr);
+        refs.content.addTag('news:offline').load();
+        progress.style.display='none';
+        refs.top.emit('icon:stop');
       });
       xhr.send();
     }
     this.inject({
       layout:this,
-      main:refs.main
+      main:refs.main,
+      progress:refs.progress
     });
-    let content=refs.content.expose();
-    refs.reload.
-      on('click',function(e) {
-        e.preventDefault();
-        icon.classList.add('spin');
-        while (content.firstChild)
-          content.firstChild.remove();
-        rss();
-      }.bind(this)).
-      emit('click');
+    this.on('news:refresh',function() {
+      refs.top.emit('icon:spin');
+      progress.style.display='block';
+      while (content.firstChild)
+        content.firstChild.remove();
+      rss();
+    });
   });
   </script>
 </news:layout>
