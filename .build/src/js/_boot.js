@@ -1,4 +1,5 @@
 /* global roadshow */
+/* global chrome */
 
 'use strict';
 
