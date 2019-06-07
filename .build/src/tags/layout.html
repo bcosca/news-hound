@@ -1,12 +1,20 @@
 <news:layout tag="cc:basecoat">
   <main tag="cc:main" class="col" ref="main">
-    <header tag="news:header" class="top" ref="top"></header>
+    <header tag="cc:sheet" class="top" ref="top">
+      <div tag="cc:appbar" class="primary" ref="appbar">
+        <a class="title ml-1 mr-auto" href=".">${ document.title } <small>Version ${ props.app.manifest.version }</small></a>
+        <button type="button" class="mx-1" ref="reload"><i class="icon icon-refresh infinite" ref="icon"></i></button>
+      </div>
+    </header>
     <div tag="cc:progress" class="indeterminate" ref="progress"></div>
     <div class="container" ref="content"></div>
+    <footer ref="nagger"></footer>
   </main>
   <style>
   html,body {
-    width:480px;
+    min-width:480px;
+    width:100%;
+    max-width:480px;
     scrollbar-color:var(--shaded) transparent;
     scrollbar-width:thin;
   }
@@ -16,36 +24,53 @@
   p:empty {
     display:none;
   }
+  .container {
+    transition:opacity .45s linear;
+  }
+  .container:empty {
+    opacity:0;
+  }
   </style>
   <script>
   document.title=props.app.brand;
 
-  let self=this;
+  let $=roadshow.$,
+      self=this;
 
   this.once('ready',function() {
-    let progress=refs.progress.expose(),
+    let storage=window.localStorage,
+        main=refs.main.expose(),
+        icon=refs.icon.expose(),
+        progress=refs.progress.expose(),
         content=refs.content.expose();
     function rss() {
+      icon.classList.add('spin');
+      refs.progress.css({ display:'block' });
+      refs.content.empty();
+      refs.nagger.empty();
       let xhr=new XMLHttpRequest();
       xhr.open('GET','https://news.google.com/rss');
       xhr.addEventListener('load',function() {
+        refs.progress.css({ display:'none' });
+        icon.classList.remove('spin');
+        refs.nagger.
+          addTag('news:nagger').
+          load();
         let xml=xhr.responseXML,
-            url=xml.querySelector('channel>link'),
-            stamp=xml.querySelector('lastBuildDate');
-        xml.querySelectorAll('channel>item').forEach(function(item) {
+            stamp=$('lastBuildDate',xml).shift(),
+            url=$('channel>link',xml).shift();
+        $('channel>item',xml).forEach(function(item) {
           content.appendChild(document.createElement('div'));
           self.getRef(content.lastElementChild).
             inject({ item }).
             addTag('news:item').
             load();
         });
-        progress.style.display='none';
-        refs.top.emit('icon:stop');
       });
       xhr.addEventListener('error',function() {
         refs.content.addTag('news:offline').load();
-        progress.style.display='none';
-        refs.top.emit('icon:stop');
+        refs.progress.css({ display:'none' });
+        icon.classList.remove('spin');
       });
       xhr.send();
     }
@@ -54,13 +79,11 @@
       main:refs.main,
       progress:refs.progress
     });
-    this.on('news:refresh',function() {
-      refs.top.emit('icon:spin');
-      progress.style.display='block';
-      while (content.firstChild)
-        content.firstChild.remove();
-      rss();
-    });
+    refs.reload.
+      on('click',function(e) {
+        rss();
+      }).
+      emit('click');
   });
   </script>
 </news:layout>

@@ -5,6 +5,7 @@
   }
   </style>
   <script>
+  let $=roadshow.$;
 	/* Compute time difference between two Unix timestamps */
 	function timeDiff(time,ref) {
 		if (!ref)
@@ -36,9 +37,9 @@
 	}
 
   // Extract RSS elements
-  let desc=props.item.querySelector('description'),
-      photo=props.item.querySelector('content'),
-      pub=new Date(props.item.querySelector('pubDate').textContent),
+  let desc=$('description',props.item).shift(),
+      photo=$('content',props.item).shift(),
+      pub=new Date($('pubDate',props.item).shift().textContent),
       tmp=document.createElement('template');
   tmp.innerHTML=(
     desc.textContent.
@@ -47,26 +48,26 @@
   );
   if (/^ul/i.test(tmp.content.firstElementChild.tagName)) {
     // Restructure HTML
-    let first=tmp.content.querySelector('li:first-child'),
+    let first=$('li:first-child',tmp.content).shift(),
         frag=document.createDocumentFragment();
     while (first.firstChild)
       frag.appendChild(first.firstChild);
     tmp.content.insertBefore(frag,tmp.content.firstElementChild);
     first.remove();
     // Remove link to Google News page
-    tmp.content.querySelector('li:last-child').remove();
+    $('li:last-child',tmp.content).shift().remove();
   }
 
   // Tweak formatting
-  tmp.content.querySelectorAll('strong').forEach(function(element) {
+  $('strong',tmp.content).forEach(function(element) {
     element.remove();
   });
-  tmp.content.querySelectorAll('p,ul').forEach(function(element) {
+  $('p,ul',tmp.content).forEach(function(element) {
     element.setAttribute('class','small mt-1 mb-0');
     if (element.matches('ul'))
       element.classList.add('pl-2');
   });
-  tmp.content.querySelectorAll('font').forEach(function(element) {
+  $('font',tmp.content).forEach(function(element) {
     element.setAttribute('class','text-muted nobr');
     element.removeAttribute('color');
     if (!element.parentElement) {
@@ -77,23 +78,23 @@
   });
 
   // Wrap news item in a div element
-  let div=document.createElement('div');
+  let item=this.expose(),
+      div=document.createElement('div');
   div.setAttribute('class','grow');
   div.appendChild(tmp.content);
-  this.expose().appendChild(div);
+  item.appendChild(div);
 
   if (photo) {
-    let img=document.createElement('img');
-    img.setAttribute('src',photo.getAttribute('url'));
-    img.setAttribute('width',96);
-    img.setAttribute('height',72);
-    img.style.objectFit='cover';
-    img.setAttribute('class','noflex ml-2');
-    img.addEventListener('error',function() {
-      // Hide broken links
-      img.style.display='none';
+    let img=this.getRef(item.appendChild(document.createElement('img')));
+    img.attr({
+      src:photo.getAttribute('url'),
+      width:96,
+      height:72,
+      class:'noflex ml-2 cover'
     });
-    this.expose().appendChild(img);
+    img.on('error',function() {
+      img.css({ display:'none' });
+    });
   }
   </script>
 </news:item>
