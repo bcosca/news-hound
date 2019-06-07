@@ -6,7 +6,8 @@
 
   roadshow.load({
     app:{
-      brand:'News Hound'
+      brand:'News Hound',
+      manifest:chrome.runtime.getManifest()
     },
     theme:{
       primary:'red-700',
