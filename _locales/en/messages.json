@@ -1,0 +1,40 @@
+{
+
+	"timeSecond":{
+		"message":"{0,plural,one {a second},other {# seconds}}"
+	},
+	"timeMinute":{
+		"message":"{0,plural,one {a minute},other {# minutes}}"
+	},
+	"timeHour":{
+		"message":"{0,plural,one {an hour},other {# hours}}"
+	},
+	"timeDay":{
+		"message":"{0,plural,one {a day},other {# days}}"
+	},
+	"timeWeek":{
+		"message":"{0,plural,one {a week},other {# weeks}}"
+	},
+	"timeMonth":{
+		"message":"{0,plural,one {a month},other {# months}}"
+	},
+	"timeYear":{
+		"message":"{0,plural,one {a year},other {# years}}"
+	},
+	"timePast":{
+		"message":"{0} ago"
+	},
+	"timeFuture":{
+		"message":"{0} from now"
+	},
+	"timeNow":{
+		"message":"just now"
+	},
+	"timeTomorrow":{
+		"message":"tomorrow"
+	},
+	"timeYesterday":{
+		"message":"yesterday"
+	}
+
+}

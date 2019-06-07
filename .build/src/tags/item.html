@@ -5,7 +5,9 @@
   }
   </style>
   <script>
-  let $=roadshow.$;
+  let $=roadshow.$,
+      format=window.ICU.format,
+      message=chrome.i18n.getMessage;
 	/* Compute time difference between two Unix timestamps */
 	function timeDiff(time,ref) {
 		if (!ref)
@@ -14,8 +16,8 @@
 		let diff=time-ref,
         abs=Math.abs(diff);
 		if (!abs)
-			return 'Just now';
-		let when=diff>0?'from now':'ago',
+			return message('timeNow');
+		let when=message(diff>0?'timeFuture':'timePast'),
         units={
           year:31.536e6,
           month:2.592e6,
@@ -29,11 +31,21 @@
 			if (abs>=units[i]) {
         unit=Math.trunc(abs/units[i]);
 				return /day/.test(i) && !(unit-1)?
-					(diff>0?'tomorrow':'yesterday'):
-					(unit+' '+i+((unit-1)?'s':'')+' '+when);
+					message(diff>0?'timeTomorrow':'timeYesterday'):
+          format(
+            when,
+            format(
+              message('time'+i[0].toUpperCase()+i.substring(1)),
+              unit
+            )
+          );
       }
-    unit=Math.trunc(abs);
-		return unit+' second'+((unit-1)?'s':'')+' '+when;
+		return format(
+      when,
+      format(
+        message('timeSecond'),
+        Math.trunc(abs))
+    );
 	}
 
   // Extract RSS elements
