@@ -12,7 +12,7 @@
 	function timeDiff(time,ref) {
 		if (!ref)
 			// Get current time if second argument is not specified
-			ref=new Date().getTime()/1e3;
+			ref=Date.now()/1e3;
 		let diff=time-ref,
         abs=Math.abs(diff);
 		if (!abs)

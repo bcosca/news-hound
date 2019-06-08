@@ -4,10 +4,11 @@
 
 (function() {
 
+  let manifest=chrome.runtime.getManifest();
   roadshow.load({
     app:{
-      brand:'News Hound',
-      manifest:chrome.runtime.getManifest()
+      brand:manifest.name,
+      manifest
     },
     theme:{
       primary:'red-700',

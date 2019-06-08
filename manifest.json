@@ -1,7 +1,7 @@
 {
 
 	"name":"News Hound",
-	"version":"0.9.5",
+	"version":"0.9.6",
 	"description":"Up-to-date news aggregated from thousands of blogs, newspapers, and magazines around the Web.",
 
 	"browser_action":{
@@ -17,8 +17,9 @@
 	},
 	"manifest_version":2,
 	"permissions":[
+    "geolocation",
 		"https://news.google.com/",
-    "https://api.ipify.org/"
+    "https://openweathermap.org/"
 	]
 
 }

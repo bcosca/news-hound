@@ -35,7 +35,10 @@
   document.title=props.app.brand;
 
   let $=roadshow.$,
-      self=this;
+      self=this,
+      api={
+        weather:'41d8b0b419d0061751264c1fb64592f0'
+      };
 
   this.once('ready',function() {
     let storage=window.localStorage,
@@ -51,6 +54,38 @@
       let xhr=new XMLHttpRequest();
       xhr.open('GET','https://news.google.com/rss');
       xhr.addEventListener('load',function() {
+        navigator.geolocation.getCurrentPosition(function(pos) {
+          let time=Date.now(),
+              today=(time-time%86.4e6)/1e3;
+          if (!storage.weatherDate || today-storage.weatherDate) {
+            let xhr=new XMLHttpRequest();
+            xhr.open(
+              'GET',
+              'https://api.openweathermap.org/data/2.5/weather?'+
+              'lat='+pos.coords.latitude+'&'+
+              'lon='+pos.coords.longitude+'&'+
+              'units=metric&'+
+              'APPID='+api.weather
+            );
+            xhr.addEventListener('load',function() {
+              storage.weatherDate=today;
+              storage.weatherJSON=xhr.responseText;
+              content.insertBefore(document.createElement('div'),content.firstChild);
+              self.getRef(content.firstElementChild).
+                inject({ item:JSON.parse(storage.weatherJSON) }).
+                addTag('news:weather').
+                load();
+            });
+            xhr.send();
+          }
+          else {
+            content.insertBefore(document.createElement('div'),content.firstChild);
+            self.getRef(content.firstElementChild).
+              inject({ item:JSON.parse(storage.weatherJSON) }).
+              addTag('news:weather').
+              load();
+          }
+        });
         refs.progress.css({ display:'none' });
         icon.classList.remove('spin');
         refs.nagger.

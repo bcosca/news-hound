@@ -1,0 +1,7 @@
+<news:weather tag="cc:card" class="flex p-2 my-2">
+  <div class="mr-auto">
+    <p class="small text-muted mb-1">${ window.ICU.format('{0,date,long}',Date.now()/1e3) } ${ props.item.name } ${ props.item.sys.country }</p>
+    <div class="h2 inline text-primary">${ props.item.main.temp }°C</div> ${ props.item.weather[0].description }
+  </div>
+  <div><i class="text-primary icon-3x wi wi-owm-${ props.item.weather[0].id }"></i></div>
+</news:weather>
