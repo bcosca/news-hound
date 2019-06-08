@@ -55,9 +55,8 @@
       xhr.open('GET','https://news.google.com/rss');
       xhr.addEventListener('load',function() {
         navigator.geolocation.getCurrentPosition(function(pos) {
-          let time=Date.now(),
-              today=(time-time%86.4e6)/1e3;
-          if (!storage.weatherDate || today-storage.weatherDate) {
+          let now=Date.now();
+          if (!storage.weatherDate || now/1e3-storage.weatherDate>86.4e3) {
             let xhr=new XMLHttpRequest();
             xhr.open(
               'GET',
@@ -68,7 +67,7 @@
               'APPID='+api.weather
             );
             xhr.addEventListener('load',function() {
-              storage.weatherDate=today;
+              storage.weatherDate=(now-now%86.4e6)/1e3;
               storage.weatherJSON=xhr.responseText;
               content.insertBefore(document.createElement('div'),content.firstChild);
               self.getRef(content.firstElementChild).
