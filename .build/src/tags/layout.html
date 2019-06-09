@@ -1,8 +1,12 @@
 <news:layout tag="cc:basecoat">
   <main tag="cc:main" class="col" ref="main">
     <header tag="cc:sheet" class="top" ref="top">
-      <div tag="cc:appbar" class="primary" ref="appbar">
-        <a class="title ml-1 mr-auto" href=".">${ document.title } <small>Version ${ props.app.manifest.version }</small></a>
+      <div tag="cc:appbar" class="${ props.app.storage.darkMode?'reverse':'primary' }" ref="appbar">
+        <a class="title ml-1 mr-auto" href=".">
+          <img src="pub/img/logo.png" height="20" class="primary">
+          <small>${ props.app.manifest.version }</small>
+        </a>
+        <button type="button" class="mx-1" ref="darkmode"><i class="icon icon-invert-colors infinite"></i></button>
         <button type="button" class="mx-1" ref="reload"><i class="icon icon-refresh infinite" ref="icon"></i></button>
       </div>
     </header>
@@ -19,13 +23,9 @@
     scrollbar-width:thin;
   }
   main {
-    background-color:var(--white);
-    background-image:url(pub/img/bg/paper.png);
+    /* background-image:url(pub/img/bg/paper.png); */
     background-attachment:fixed;
     background-repeat:repeat;
-  }
-  img {
-    background-color:var(--shaded);
   }
   p:empty {
     display:none;
@@ -35,6 +35,9 @@
   }
   .container:empty {
     opacity:0;
+  }
+  .card img {
+    background-color:var(--shaded);
   }
   </style>
   <script>
@@ -47,11 +50,13 @@
       };
 
   this.once('ready',function() {
-    let storage=window.localStorage,
+
+    let storage=props.app.storage,
         main=refs.main.expose(),
-        icon=refs.icon.expose(),
+        reload=refs.icon.expose(),
         progress=refs.progress.expose(),
         content=refs.content.expose();
+
     function weather() {
       navigator.geolocation.getCurrentPosition(function(pos) {
         let now=Date.now();
@@ -85,8 +90,9 @@
         }
       });
     }
+
     function rss() {
-      icon.classList.add('spin');
+      reload.classList.add('spin');
       refs.progress.css({ display:'block' });
       refs.content.empty();
       refs.nagger.empty();
@@ -95,7 +101,7 @@
       xhr.addEventListener('load',function() {
         weather();
         refs.progress.css({ display:'none' });
-        icon.classList.remove('spin');
+        reload.classList.remove('spin');
         refs.nagger.
           addTag('news:nagger').
           load();
@@ -128,20 +134,32 @@
           });
         }
         refs.progress.css({ display:'none' });
-        icon.classList.remove('spin');
+        reload.classList.remove('spin');
       });
       xhr.send();
     }
+
     this.inject({
       layout:this,
       main:refs.main,
       progress:refs.progress
     });
+
     refs.reload.
-      on('click',function(e) {
+      on('click',function() {
         rss();
       }).
       emit('click');
+
+    refs.darkmode.
+      on('click',function() {
+        if (storage.darkMode)
+          delete storage.darkMode;
+        else
+          storage.darkMode='on';
+          window.location.reload();
+      });
+
   });
   </script>
 </news:layout>

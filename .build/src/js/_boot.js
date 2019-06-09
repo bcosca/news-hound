@@ -4,18 +4,31 @@
 
 (function() {
 
-  let manifest=chrome.runtime.getManifest();
+  let manifest=chrome.runtime.getManifest(),
+      storage=window.localStorage;
+
   roadshow.load({
     app:{
       brand:manifest.name,
-      manifest
+      manifest,
+      storage
     },
-    theme:{
-      primary:'red-700',
-      primaryAlt:'red-a700',
-      secondary:'amber-700',
-      secondaryAlt:'amber-a700'
-    }
+    theme:storage.darkMode?
+      {
+        background:'gray-800',
+        surface:'black',
+        primary:'blue-gray-900',
+        primaryAlt:'blue-gray-400',
+        secondary:'amber-700',
+        secondaryAlt:'amber-a700',
+        muted:'blue-gray-200'
+      }:
+      {
+        primary:'red-700',
+        primaryAlt:'red-a700',
+        secondary:'amber-700',
+        secondaryAlt:'amber-a700'
+      }
   });
 
 })();

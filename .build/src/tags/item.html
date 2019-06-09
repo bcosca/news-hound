@@ -1,26 +1,24 @@
 <news:item tag="cc:card" class="flex p-2 my-2">
   <style>
   .card {
-    background-color:var(--tinted) !important;
+    background-color:var(${ props.app.storage.darkMode?'--shaded':'--tinted' }) !important;
   }
   a {
     color:${ props.css.foreground(props.theme.surface) };
   }
   </style>
   <script>
-  let $=roadshow.$,
-      format=window.ICU.format,
-      message=chrome.i18n.getMessage;
-	/* Compute time difference between two Unix timestamps */
-	function timeDiff(time,ref) {
-		if (!ref)
-			// Get current time if second argument is not specified
-			ref=Date.now()/1e3;
-		let diff=time-ref,
+  function timeDiff(time,ref) {
+    let format=window.ICU.format,
+        message=chrome.i18n.getMessage;
+    if (!ref)
+      // Get current time if second argument is not specified
+      ref=Date.now()/1e3;
+    let diff=time-ref,
         abs=Math.abs(diff);
-		if (!abs)
-			return message('timeNow');
-		let when=message(diff>0?'timeFuture':'timePast'),
+    if (!abs)
+      return message('timeNow');
+    let when=message(diff>0?'timeFuture':'timePast'),
         units={
           year:31.536e6,
           month:2.592e6,
@@ -30,11 +28,11 @@
           minute:60
         },
         unit;
-		for (let i in units)
-			if (abs>=units[i]) {
+    for (let i in units)
+      if (abs>=units[i]) {
         unit=Math.trunc(abs/units[i]);
-				return /day/.test(i) && !(unit-1)?
-					message(diff>0?'timeTomorrow':'timeYesterday'):
+        return /day/.test(i) && !(unit-1)?
+          message(diff>0?'timeTomorrow':'timeYesterday'):
           format(
             when,
             format(
@@ -43,13 +41,14 @@
             )
           );
       }
-		return format(
+    return format(
       when,
       format(
         message('timeSecond'),
         Math.trunc(abs))
     );
-	}
+  }
+  let $=roadshow.$;
 
   // Extract RSS elements
   let desc=$('description',props.item).shift(),
@@ -88,7 +87,7 @@
     if (!element.parentElement) {
       element.classList.add('small');
       // Add human-readable timestamp
-      element.innerHTML+=' · '+timeDiff(pub.getTime()/1e3);
+      element.textContent+=' · '+timeDiff(pub.getTime()/1e3);
     }
   });
 
@@ -102,13 +101,10 @@
   if (photo) {
     let img=this.getRef(item.appendChild(document.createElement('img')));
     img.attr({
-      src:photo.getAttribute('url'),
+      src:photo.getAttribute('url').replace(/(\-[wh])150/g,'$196'),
       width:96,
       height:72,
       class:'noflex ml-2 cover'
-    });
-    img.on('error',function() {
-      img.css({ display:'none' });
     });
   }
   </script>
