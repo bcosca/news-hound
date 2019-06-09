@@ -1,7 +1,10 @@
-<news:weather tag="cc:card" class="flex p-2 my-2">
+<news:weather tag="cc:card" class="flex flex-start p-2 my-2">
+  <div class="d4 inline text-primary mr-2 my-0"><b>${ props.item.main.temp }°C</b></div>
   <div class="mr-auto">
-    <p class="small text-muted mb-1">${ window.ICU.format('{0,date,long}',Date.now()/1e3) } ${ props.item.name } ${ props.item.sys.country }</p>
-    <div class="h2 inline text-primary"><b>${ props.item.main.temp }°C</b></div> ${ props.item.weather[0].description }
+    <p class="small text-muted mb-0">${ window.ICU.format('{0,date,long}',Date.now()/1e3) } ${ props.item.name } ${ props.item.sys.country }</p>
+    ${ props.item.weather[0].description }
   </div>
-  <div><i class="text-primary icon-3x wi wi-owm-${ props.item.weather[0].id }"></i></div>
+  <div>
+    <i class="d4 text-primary wi wi-owm-${ props.item.weather[0].id } my-0"></i>
+  </div>
 </news:weather>
