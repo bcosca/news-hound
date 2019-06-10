@@ -2,11 +2,10 @@
   <main tag="cc:main" ref="main">
     <header tag="cc:sheet" class="top" ref="top">
       <div tag="cc:appbar" class="${ props.app.storage.darkMode?'reverse':'primary' }" ref="appbar">
-        <a class="title ml-1 mr-auto" href="index.html">
+        <span class="title ml-1 mr-auto">
           <img src="pub/img/logo.png" height="20" class="primary">
-          <small>${ props.app.manifest.version }</small>
-        </a>
-        <button type="button" class="mx-1" ref="darkmode" title="Dark theme"><i class="icon icon-invert-colors infinite"></i></button>
+        </span>
+        <button type="button" class="mx-1" ref="darkmode" title="${ props.app.storage.darkMode?'Disable':'Enable' } dark mode"><i class="icon icon-invert-colors infinite"></i></button>
         <button type="button" class="mx-1" ref="reload" title="Refresh"><i class="icon icon-refresh infinite" ref="icon"></i></button>
       </div>
     </header>
@@ -23,7 +22,7 @@
     scrollbar-width:thin;
   }
   main {
-    /* background-image:url(pub/img/bg/paper.png); */
+    background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQYV2NkQAKrVq0yZoTxQZywsLCzYAEYB8RmROaABACrOQ42LQKAagAAAABJRU5ErkJggg==);
     background-attachment:fixed;
     background-repeat:repeat;
   }

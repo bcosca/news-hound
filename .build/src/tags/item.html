@@ -1,4 +1,4 @@
-<news:item tag="cc:card" class="flex p-2 my-2">
+<news:item tag="cc:card" class="flex my-2">
   <style>
   .card {
     background-color:var(${ props.app.storage.darkMode?'--shaded':'--surface' }) !important;
@@ -60,13 +60,13 @@
       replace(/<(\/)?ol>/,'<$1ul>').
       replace(/&nbsp;/g,' ')
   );
+  let headline=document.createElement('div');
   if (/^ul/i.test(tmp.content.firstElementChild.tagName)) {
     // Restructure HTML
-    let first=$('li:first-child',tmp.content).shift(),
-        frag=document.createDocumentFragment();
+    let first=$('li:first-child',tmp.content).shift();
     while (first.firstChild)
-      frag.appendChild(first.firstChild);
-    tmp.content.insertBefore(frag,tmp.content.firstElementChild);
+      headline.appendChild(first.firstChild);
+    tmp.content.insertBefore(headline,tmp.content.firstElementChild);
     first.remove();
     // Remove link to Google News page
     $('li:last-child',tmp.content).shift().remove();
@@ -84,7 +84,7 @@
   $('font',tmp.content).forEach(function(element) {
     element.setAttribute('class','text-muted nobr');
     element.removeAttribute('color');
-    if (!element.parentElement) {
+    if (element.parentElement && element.parentElement.isSameNode(headline)) {
       element.classList.add('small');
       // Add human-readable timestamp
       element.textContent+=' · '+timeDiff(pub.getTime()/1e3);
@@ -94,9 +94,8 @@
   // Wrap news item in a div element
   let item=this.expose(),
       div=document.createElement('div');
-  div.setAttribute('class','grow');
+  div.setAttribute('class','grow m-2');
   div.appendChild(tmp.content);
-  console.dir($('a:first-child,font:first-child',div));
   item.appendChild(div);
 
   if (photo) {
@@ -105,7 +104,7 @@
       src:photo.getAttribute('url').replace(/(\-[wh])150/g,'$196'),
       width:96,
       height:72,
-      class:'noflex ml-2 cover'
+      class:'noflex cover mr-2 my-2'
     });
   }
   </script>
