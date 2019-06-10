@@ -1,7 +1,7 @@
 <news:item tag="cc:card" class="flex p-2 my-2">
   <style>
   .card {
-    background-color:var(${ props.app.storage.darkMode?'--shaded':'--tinted' }) !important;
+    background-color:var(${ props.app.storage.darkMode?'--shaded':'--surface' }) !important;
   }
   a {
     color:${ props.css.foreground(props.theme.surface) };
@@ -96,6 +96,7 @@
       div=document.createElement('div');
   div.setAttribute('class','grow');
   div.appendChild(tmp.content);
+  console.dir($('a:first-child,font:first-child',div));
   item.appendChild(div);
 
   if (photo) {

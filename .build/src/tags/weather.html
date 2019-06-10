@@ -4,7 +4,5 @@
     <p class="small text-muted mb-0">${ window.ICU.format('{0,date,long}',Date.now()/1e3) } ${ props.item.name } ${ props.item.sys.country }</p>
     ${ props.item.weather[0].description }
   </div>
-  <div>
-    <i class="d4 text-secondary wi wi-owm-${ props.item.weather[0].id } my-0"></i>
-  </div>
+  <i class="d4 text-secondary wi wi-owm-${ props.item.weather[0].id } my-0" title="${ props.item.weather[0].main }"></i>
 </news:weather>

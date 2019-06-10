@@ -1,24 +1,24 @@
 <news:layout tag="cc:basecoat">
-  <main tag="cc:main" class="col" ref="main">
+  <main tag="cc:main" ref="main">
     <header tag="cc:sheet" class="top" ref="top">
       <div tag="cc:appbar" class="${ props.app.storage.darkMode?'reverse':'primary' }" ref="appbar">
-        <a class="title ml-1 mr-auto" href=".">
+        <a class="title ml-1 mr-auto" href="index.html">
           <img src="pub/img/logo.png" height="20" class="primary">
           <small>${ props.app.manifest.version }</small>
         </a>
-        <button type="button" class="mx-1" ref="darkmode"><i class="icon icon-invert-colors infinite"></i></button>
-        <button type="button" class="mx-1" ref="reload"><i class="icon icon-refresh infinite" ref="icon"></i></button>
+        <button type="button" class="mx-1" ref="darkmode" title="Dark theme"><i class="icon icon-invert-colors infinite"></i></button>
+        <button type="button" class="mx-1" ref="reload" title="Refresh"><i class="icon icon-refresh infinite" ref="icon"></i></button>
       </div>
     </header>
     <div tag="cc:progress" class="indeterminate" ref="progress"></div>
     <div class="container" ref="content"></div>
-    <footer ref="nagger"></footer>
+    <footer ref="colophon"></footer>
   </main>
   <style>
+  body {
+    width:480px;
+  }
   html,body {
-    min-width:480px;
-    width:100%;
-    max-width:480px;
     scrollbar-color:var(--shaded) transparent;
     scrollbar-width:thin;
   }
@@ -95,15 +95,15 @@
       reload.classList.add('spin');
       refs.progress.css({ display:'block' });
       refs.content.empty();
-      refs.nagger.empty();
+      refs.colophon.empty();
       let xhr=new XMLHttpRequest();
       xhr.open('GET','https://news.google.com/rss');
       xhr.addEventListener('load',function() {
         weather();
         refs.progress.css({ display:'none' });
         reload.classList.remove('spin');
-        refs.nagger.
-          addTag('news:nagger').
+        refs.colophon.
+          addTag('news:colophon').
           load();
         let xml=xhr.responseXML,
             stamp=$('lastBuildDate',xml).shift(),
