@@ -4,4 +4,9 @@ Get the latest news and follow the coverage of breaking news events, local news,
 
 This browser extension uses the [Roadshow](https://github.com/bcosca/roadshow) rendering engine and [ClearCoat](https://github.com/bcosca/clearcoat) user interface components.
 
+### Screenshots
+
+![Light mode](pub/img/screenshot-0.png)
+![Dark mode](pub/img/screenshot-1.png)
+
 [Download News Hound from the Web Store.](https://chrome.google.com/webstore/detail/news-hound/oldaaikodjfajkjopadhhbkbmlgejdpb)

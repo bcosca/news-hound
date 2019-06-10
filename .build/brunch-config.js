@@ -35,7 +35,8 @@
 		},
 		npm:{ enabled:false },
 		notifications:false,
-		optimize:true
+		optimize:true,
+    sourceMaps:false
 	};
 
 })();
