@@ -6,10 +6,12 @@ This browser extension uses the [Roadshow](https://github.com/bcosca/roadshow) r
 
 ### Screenshots
 
-Default
+Default layout
+
 ![Light mode](pub/img/screenshot-0.png)
 
 Dark mode
+
 ![Dark mode](pub/img/screenshot-1.png)
 
 [Download News Hound from the Web Store.](https://chrome.google.com/webstore/detail/news-hound/oldaaikodjfajkjopadhhbkbmlgejdpb)
