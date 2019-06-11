@@ -1,10 +1,11 @@
 <news:layout tag="cc:basecoat">
   <main tag="cc:main" ref="main">
     <header tag="cc:sheet" class="top" ref="top">
-      <div tag="cc:appbar" class="${ props.app.storage.darkMode?'reverse':'primary' }" ref="appbar">
-        <span class="title ml-1 mr-auto">
-          <img src="pub/img/logo.png" height="20" class="primary">
+      <div tag="cc:appbar" class="${ props.app.storage.darkMode?'reverse':'primary' }">
+        <span class="title mx-1 relative" ref="title">
+          <img src="pub/img/logo.png" height="20">
         </span>
+        <button type="button" class="mx-1" ref="trigger" title="Search"><i class="icon icon-search infinite"></i></button>
         <button type="button" class="mx-1" ref="darkmode" title="${ props.app.storage.darkMode?'Disable':'Enable' } dark mode"><i class="icon icon-invert-colors infinite"></i></button>
         <button type="button" class="mx-1" ref="reload" title="Refresh"><i class="icon icon-refresh infinite" ref="icon"></i></button>
       </div>
@@ -23,11 +24,13 @@
   }
   main {
     background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQYV2NkQAKrVq0yZoTxQZywsLCzYAEYB8RmROaABACrOQ42LQKAagAAAABJRU5ErkJggg==);
-    background-attachment:fixed;
     background-repeat:repeat;
   }
   p:empty {
     display:none;
+  }
+  .appbar [type="search"] {
+    padding-right:2.5rem;
   }
   .container {
     transition:opacity .45s linear;
@@ -78,7 +81,10 @@
             storage.location=JSON.stringify(geo);
             storage.weatherDate=(now-now%86.4e6)/1e3;
             storage.weatherJSON=xhr.responseText;
-            content.insertBefore(document.createElement('div'),content.firstChild);
+            content.insertBefore(
+              document.createElement('div'),
+              content.firstChild
+            );
             self.getRef(content.firstElementChild).
               inject({ item:JSON.parse(storage.weatherJSON) }).
               addTag('news:weather').
@@ -87,7 +93,10 @@
           xhr.send();
         }
         else {
-          content.insertBefore(document.createElement('div'),content.firstChild);
+          content.insertBefore(
+            document.createElement('div'),
+            content.firstChild
+          );
           self.getRef(content.firstElementChild).
             inject({ item:JSON.parse(storage.weatherJSON) }).
             addTag('news:weather').
@@ -96,13 +105,15 @@
       });
     }
 
-    function rss() {
+    function rss(query) {
+      if (query)
+        query='/search?q='+query;
       reload.classList.add('spin');
       refs.progress.css({ display:'block' });
       refs.content.empty();
       refs.colophon.empty();
       let xhr=new XMLHttpRequest();
-      xhr.open('GET','https://news.google.com/rss');
+      xhr.open('GET','https://news.google.com/rss'+(query || ''));
       xhr.addEventListener('load',function() {
         weather();
         refs.progress.css({ display:'none' });
@@ -150,6 +161,37 @@
       progress:refs.progress
     });
 
+    refs.trigger.
+      on('click',function() {
+        let title=refs.title.expose(),
+            trigger=refs.trigger.expose(),
+            html=title.innerHTML;
+        refs.title.empty();
+        trigger.style.display='none';
+        let input=title.appendChild(document.createElement('input')),
+            clear=title.appendChild(document.createElement('button'));
+        this.getRef(input).
+          on('change',function() {
+            rss(input.value);
+          }).
+          attr({ type:'search' });
+        input.focus();
+        this.getRef(clear).
+          on('click',function() {
+            refs.title.empty();
+            title.innerHTML=html;
+            trigger.style.display='block';
+            rss();
+          }).
+          attr({
+            type:'button',
+            class:'absolute top right mx-1'
+          });
+        let icon=clear.appendChild(document.createElement('i'));
+        this.getRef(icon).
+          attr({ class:'icon icon-cancel' });
+      });
+
     refs.reload.
       on('click',function() {
         rss();
@@ -168,4 +210,3 @@
   });
   </script>
 </news:layout>
-
