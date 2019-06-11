@@ -58,8 +58,13 @@
 
     function weather() {
       navigator.geolocation.getCurrentPosition(function(pos) {
-        let now=Date.now();
-        if (!storage.weatherDate || now/1e3-storage.weatherDate>86.4e3) {
+        let now=Date.now(),
+            geo={
+              latitude:pos.coords.latitude,
+              longitude:pos.coords.longitude
+            };
+        if (!storage.location || JSON.stringify(geo)!=storage.location ||
+            !storage.weatherDate || now/1e3-storage.weatherDate>86.4e3) {
           let xhr=new XMLHttpRequest();
           xhr.open(
             'GET',
@@ -70,6 +75,7 @@
             'APPID='+api.weather
           );
           xhr.addEventListener('load',function() {
+            storage.location=JSON.stringify(geo);
             storage.weatherDate=(now-now%86.4e6)/1e3;
             storage.weatherJSON=xhr.responseText;
             content.insertBefore(document.createElement('div'),content.firstChild);
