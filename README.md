@@ -15,3 +15,7 @@ Dark mode
 ![Dark mode](pub/img/screenshot-1.png)
 
 [Download News Hound from the Web Store.](https://chrome.google.com/webstore/detail/news-hound/oldaaikodjfajkjopadhhbkbmlgejdpb)
+
+Support further development of News Hound. Your donations help keep this project ad-free.
+
+[Donate via Paypal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3VSK6CKUYZRBL&source=url)
