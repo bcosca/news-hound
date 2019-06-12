@@ -28,7 +28,8 @@
         primary:'red-700',
         primaryAlt:'red-a700',
         secondary:'amber-700',
-        secondaryAlt:'amber-a700'
+        secondaryAlt:'amber-a700',
+        muted:'blue-gray-300'
       }
   });
 

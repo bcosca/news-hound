@@ -60,16 +60,26 @@
       replace(/<(\/)?ol>/,'<$1ul>').
       replace(/&nbsp;/g,' ')
   );
-  let headline=document.createElement('div');
+  let headline=document.createElement('div'),
+      first;
   if (/^ul/i.test(tmp.content.firstElementChild.tagName)) {
     // Restructure HTML
-    let first=$('li:first-child',tmp.content).shift();
+    first=$('li:first-child',tmp.content).shift();
     while (first.firstChild)
       headline.appendChild(first.firstChild);
     tmp.content.insertBefore(headline,tmp.content.firstElementChild);
     first.remove();
     // Remove link to Google News page
     $('li:last-child',tmp.content).shift().remove();
+  }
+  else {
+    while (tmp.content.firstChild) {
+      if (tmp.content.firstChild.nodeType==window.Node.ELEMENT_NODE &&
+          /^p/i.test(tmp.content.firstChild.tagName))
+        break;
+      headline.appendChild(tmp.content.firstChild);
+    }
+    tmp.content.insertBefore(headline,tmp.content.firstElementChild);
   }
 
   // Tweak formatting
@@ -84,7 +94,7 @@
   $('font',tmp.content).forEach(function(element) {
     element.setAttribute('class','text-muted');
     element.removeAttribute('color');
-    if (element.parentElement && element.parentElement.isSameNode(headline)) {
+    if (!element.parentElement || element.parentElement.isSameNode(headline)) {
       element.classList.add('small');
       // Add human-readable timestamp
       element.textContent+=' · '+timeDiff(pub.getTime()/1e3);
@@ -109,3 +119,7 @@
   }
   </script>
 </news:item>
+
+<a href="https://news.google.com/__i/rss/rd/articles/CBMibmh0dHBzOi8vbmV3c2luZm8uaW5xdWlyZXIubmV0LzExMjk0NTMvc3RyaXBwaW5nLW9mLWF1dGhvcml0eS1hbmRhbmFyLWlzc3Vlcy1vcmRlci1vbi1waWEtYW1pZC1wcm9iZS1vbi1jbGF2aXRl0gEA?oc=5" target="_blank">'Stripping' of authority? Andanar issues order on PIA amid probe on Clavite</a>
+<font color="#6f6f6f">INQUIRER.net</font>
+<p>Communications Secretary Martin Andanar has issued a department order saying the Presidential Communications Operations Office (PCOO) would be the ...</p>
