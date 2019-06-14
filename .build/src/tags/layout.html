@@ -5,10 +5,14 @@
         <span class="title mx-1 relative" ref="title">
           <img src="pub/img/logo.png" height="20">
         </span>
-        <button type="button" class="mx-1" ref="trigger" title="Search"><i class="icon icon-search infinite"></i></button>
-        <button type="button" class="mx-1" ref="darkmode" title="${ props.app.storage.darkMode?'Disable':'Enable' } dark mode"><i class="icon icon-invert-colors infinite"></i></button>
+        <button type="button" class="mx-1" ref="search" title="Search"><i class="icon icon-search infinite"></i></button>
+        <button type="button" class="mx-1" ref="darkmode" title="Toggle dark mode"><i class="icon icon-invert-colors infinite"></i></button>
         <button type="button" class="mx-1" ref="reload" title="Refresh"><i class="icon icon-refresh infinite" ref="icon"></i></button>
       </div>
+      <template id="search">
+        <input type="search">
+        <button type="button" class="absolute top right mx-1" ref="cancel" title="Cancel"><i class="icon icon-cancel"></i></button>
+      </template>
     </header>
     <div class="container" ref="content"></div>
     <footer ref="colophon"></footer>
@@ -47,10 +51,16 @@
   let $=roadshow.$,
       self=this,
       api={
+        /* OpenWeatherMap API key */
         weather:'41d8b0b419d0061751264c1fb64592f0'
       };
 
   this.once('ready',function() {
+
+    this.inject({
+      layout:this,
+      main:refs.main
+    });
 
     let storage=props.app.storage,
         main=refs.main.expose(),
@@ -58,14 +68,17 @@
         content=refs.content.expose();
 
     function weather() {
+      /* Retrieve latitude/longitude using geolocation API */
       navigator.geolocation.getCurrentPosition(function(pos) {
-        let now=Date.now(),
+        let now=Date.now()/1e3,
             geo={
               latitude:pos.coords.latitude,
               longitude:pos.coords.longitude
-            };
+            },
+            age=28.8e3; // 8 hours
+        /* Check if location changed or past request expired */
         if (!storage.location || JSON.stringify(geo)!=storage.location ||
-            !storage.weatherDate || now/1e3-storage.weatherDate>86.4e3) {
+            !storage.weatherDate || now-storage.weatherDate>age) {
           let xhr=new XMLHttpRequest();
           xhr.open(
             'GET',
@@ -76,14 +89,16 @@
             'APPID='+api.weather
           );
           xhr.addEventListener('load',function() {
+            /* Cache the location, current date, and JSON response */
             storage.location=JSON.stringify(geo);
-            storage.weatherDate=(now-now%86.4e6)/1e3;
+            storage.weatherDate=now-now%age;
             storage.weatherJSON=xhr.responseText;
             content.insertBefore(
               document.createElement('div'),
               content.firstChild
             );
             self.getRef(content.firstElementChild).
+              /* Load weather component */
               inject({ item:JSON.parse(storage.weatherJSON) }).
               addTag('news:weather').
               load();
@@ -91,11 +106,13 @@
           xhr.send();
         }
         else {
+          /* Retrieve cached data */
           content.insertBefore(
             document.createElement('div'),
             content.firstChild
           );
           self.getRef(content.firstElementChild).
+            /* Load weather component */
             inject({ item:JSON.parse(storage.weatherJSON) }).
             addTag('news:weather').
             load();
@@ -104,17 +121,18 @@
     }
 
     function rss(query) {
-      if (query)
-        query='/search?q='+query;
+      query=query?('/search?q='+query):'';
       reload.classList.add('spin');
       refs.content.empty();
       refs.colophon.empty();
       let xhr=new XMLHttpRequest();
-      xhr.open('GET','https://news.google.com/rss'+(query || ''));
+      xhr.open('GET','https://news.google.com/rss'+query);
       xhr.addEventListener('load',function() {
-        weather();
+        if (!query.length)
+          weather();
         reload.classList.remove('spin');
         refs.colophon.
+          /* Load colophon component */
           addTag('news:colophon').
           load();
         let xml=xhr.responseXML,
@@ -132,6 +150,7 @@
       });
       xhr.addEventListener('error',function() {
         refs.content.
+          /* Display offline message */
           addTag('news:offline').
           load();
         if (storage.newsXML) {
@@ -140,6 +159,7 @@
           $('channel>item',xml).forEach(function(item) {
             content.appendChild(document.createElement('div'));
             self.getRef(content.lastElementChild).
+              /* Load news item component */
               inject({ item }).
               addTag('news:item').
               load();
@@ -150,49 +170,47 @@
       xhr.send();
     }
 
-    this.inject({
-      layout:this,
-      main:refs.main
-    });
-
-    refs.trigger.
+    refs.search.
       on('click',function() {
+        /* Display search form input element */
         let title=refs.title.expose(),
-            trigger=refs.trigger.expose(),
+            search=refs.search.expose(),
             html=title.innerHTML;
         refs.title.empty();
-        trigger.style.display='none';
-        let input=title.appendChild(document.createElement('input')),
-            clear=title.appendChild(document.createElement('button'));
+        search.style.display='none';
+        title.appendChild(
+          document.getElementById('search').
+            cloneNode(true).
+            content
+        );
+        let input=$('[type="search"]',title).shift(),
+            cancel=$('button',title).shift();
         this.getRef(input).
+          /* Update news page with user query */
           on('change',function() {
             rss(input.value);
-          }).
-          attr({ type:'search' });
+          });
+        /* Autofocus on element */
         input.focus();
-        this.getRef(clear).
+        this.getRef(cancel).
+          /* Cancel search */
           on('click',function() {
             refs.title.empty();
             title.innerHTML=html;
-            trigger.style.display='block';
+            search.style.display='block';
             rss();
-          }).
-          attr({
-            type:'button',
-            class:'absolute top right mx-1'
           });
-        let icon=clear.appendChild(document.createElement('i'));
-        this.getRef(icon).
-          attr({ class:'icon icon-cancel' });
       });
 
     refs.reload.
+      /* Reload news page */
       on('click',function() {
         rss();
       }).
       emit('click');
 
     refs.darkmode.
+      /* Toggle dark mode */
       on('click',function() {
         if (storage.darkMode)
           delete storage.darkMode;

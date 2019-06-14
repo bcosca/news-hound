@@ -8,11 +8,17 @@
   }
   </style>
   <script>
+  /**
+   * Return time difference in human-readable format
+   * @return string
+   * @param int time
+   * @param int? ref
+   */
   function timeDiff(time,ref) {
     let format=window.ICU.format,
         message=chrome.i18n.getMessage;
     if (!ref)
-      // Get current time if second argument is not specified
+      /* Use current time as reference if second argument is not specified */
       ref=Date.now()/1e3;
     let diff=time-ref,
         abs=Math.abs(diff);
@@ -50,7 +56,7 @@
   }
   let $=roadshow.$;
 
-  // Extract RSS elements
+  /* Parse RSS feed */
   let desc=$('description',props.item).shift(),
       photo=$('content',props.item).shift(),
       pub=new Date($('pubDate',props.item).shift().textContent),
@@ -63,13 +69,13 @@
   let headline=document.createElement('div'),
       first;
   if (/^ul/i.test(tmp.content.firstElementChild.tagName)) {
-    // Restructure HTML
+    /* Restructure HTML */
     first=$('li:first-child',tmp.content).shift();
     while (first.firstChild)
       headline.appendChild(first.firstChild);
     tmp.content.insertBefore(headline,tmp.content.firstElementChild);
     first.remove();
-    // Remove link to Google News page
+    /* Remove link to Google News page */
     $('li:last-child',tmp.content).shift().remove();
   }
   else {
@@ -82,7 +88,7 @@
     tmp.content.insertBefore(headline,tmp.content.firstElementChild);
   }
 
-  // Tweak formatting
+  /* Tweak formatting */
   $('strong',tmp.content).forEach(function(element) {
     element.remove();
   });
@@ -96,12 +102,12 @@
     element.removeAttribute('color');
     if (!element.parentElement || element.parentElement.isSameNode(headline)) {
       element.classList.add('small');
-      // Add human-readable timestamp
+      /* Add human-readable timestamp */
       element.textContent+=' · '+timeDiff(pub.getTime()/1e3);
     }
   });
 
-  // Wrap news item in a div element
+  /* Wrap news item in a DIV element */
   let item=this.expose(),
       div=document.createElement('div');
   div.setAttribute('class','grow m-2');
@@ -109,17 +115,17 @@
   item.appendChild(div);
 
   if (photo) {
-    let img=this.getRef(item.appendChild(document.createElement('img')));
-    img.attr({
-      src:photo.getAttribute('url').replace(/(\-[wh])150/g,'$196'),
-      width:96,
-      height:72,
-      class:'noflex cover mr-2 my-2'
-    });
+    let img=document.createElement('img');
+    this.getRef(img).
+      on('load',function() {
+        item.appendChild(img);
+      }).
+      attr({
+        src:photo.getAttribute('url').replace(/(\-[wh])150/g,'$196'),
+        width:96,
+        height:72,
+        class:'noflex cover mr-2 my-2'
+      });
   }
   </script>
 </news:item>
-
-<a href="https://news.google.com/__i/rss/rd/articles/CBMibmh0dHBzOi8vbmV3c2luZm8uaW5xdWlyZXIubmV0LzExMjk0NTMvc3RyaXBwaW5nLW9mLWF1dGhvcml0eS1hbmRhbmFyLWlzc3Vlcy1vcmRlci1vbi1waWEtYW1pZC1wcm9iZS1vbi1jbGF2aXRl0gEA?oc=5" target="_blank">'Stripping' of authority? Andanar issues order on PIA amid probe on Clavite</a>
-<font color="#6f6f6f">INQUIRER.net</font>
-<p>Communications Secretary Martin Andanar has issued a department order saying the Presidential Communications Operations Office (PCOO) would be the ...</p>
