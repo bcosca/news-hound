@@ -50,6 +50,7 @@
 
   let $=roadshow.$,
       self=this,
+      storage=props.app.storage,
       api={
         /* OpenWeatherMap API key */
         weather:'41d8b0b419d0061751264c1fb64592f0'
@@ -62,8 +63,7 @@
       main:refs.main
     });
 
-    let storage=props.app.storage,
-        main=refs.main.expose(),
+    let main=refs.main.expose(),
         reload=refs.icon.expose(),
         content=refs.content.expose();
 
@@ -120,15 +120,19 @@
       });
     }
 
-    function rss(query) {
-      query=query?('/search?q='+query):'';
+    function rss() {
+
       reload.classList.add('spin');
       refs.content.empty();
       refs.colophon.empty();
       let xhr=new XMLHttpRequest();
-      xhr.open('GET','https://news.google.com/rss'+query);
+      xhr.open(
+        'GET',
+        'https://news.google.com/rss'+
+        (storage.query?('/search?q='+storage.query):'')
+      );
       xhr.addEventListener('load',function() {
-        if (!query.length)
+        if (!storage.query)
           weather();
         reload.classList.remove('spin');
         refs.colophon.
@@ -185,10 +189,18 @@
         );
         let input=$('[type="search"]',title).shift(),
             cancel=$('button',title).shift();
+        if (storage.query)
+          input.value=storage.query;
         this.getRef(input).
           /* Update news page with user query */
           on('change',function() {
-            rss(input.value);
+            if (input.value.length) {
+              storage.query=input.value;
+              rss();
+            }
+            else
+              this.getRef(cancel).
+                emit('click');
           });
         /* Autofocus on element */
         input.focus();
@@ -198,9 +210,14 @@
             refs.title.empty();
             title.innerHTML=html;
             search.style.display='block';
+            delete storage.query;
             rss();
           });
       });
+
+    if (storage.query)
+      refs.search.
+        emit('click');
 
     refs.reload.
       /* Reload news page */
