@@ -1,4 +1,4 @@
-<news:layout tag="cc:basecoat">
+<news:layout>
   <main tag="cc:main" ref="main">
     <header tag="cc:sheet" class="top" ref="top">
       <div tag="cc:appbar" class="${ props.app.storage.darkMode?'reverse':'primary' }">
@@ -34,6 +34,9 @@
   }
   .appbar [type="search"] {
     padding-right:2.5rem;
+  }
+  .appbar [type="search"]+button {
+    color:${ props.css.foreground(props.theme.primary) };
   }
   .container {
     transition:opacity .45s linear;
@@ -192,6 +195,7 @@
         );
         let input=$('[type="search"]',title).shift(),
             cancel=$('button',title).shift();
+        input.spellcheck=false;
         if (storage.query)
           input.value=storage.query;
         this.getRef(input).
