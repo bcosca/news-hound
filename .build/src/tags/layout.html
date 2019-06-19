@@ -6,7 +6,7 @@
           <img src="pub/img/logo.png" height="20">
         </span>
         <button type="button" class="mx-1" ref="search" title="Search"><i class="icon icon-search infinite"></i></button>
-        <button type="button" class="mx-1" ref="darkmode" title="Toggle dark mode"><i class="icon icon-invert-colors infinite"></i></button>
+        <button type="button" class="mx-1" ref="darkmode" title="Toggle dark mode"><i class="icon ${ props.app.storage.darkMode?'icon-invert-colors-off':'icon-invert-colors' } infinite"></i></button>
         <button type="button" class="mx-1" ref="reload" title="Refresh"><i class="icon icon-refresh infinite" ref="icon"></i></button>
       </div>
       <template id="search">
@@ -17,6 +17,7 @@
     <div class="container" ref="content"></div>
     <footer ref="colophon"></footer>
   </main>
+  <div tag="cc:dialog" ref="imgzoom"></div>
   <style>
   body {
     width:480px;
@@ -54,7 +55,7 @@
   let $=roadshow.$,
       self=this,
       storage=props.app.storage,
-      timeout=5e3,
+      timeout=7.5e3,
       api={
         /* OpenWeatherMap API key */
         weather:'41d8b0b419d0061751264c1fb64592f0'
@@ -64,7 +65,8 @@
 
     this.inject({
       layout:this,
-      main:refs.main
+      main:refs.main,
+      zoom:refs.imgzoom
     });
 
     let main=refs.main.expose(),
@@ -102,10 +104,10 @@
               document.createElement('div'),
               content.firstChild
             );
-            self.getRef(content.firstElementChild).
+            self.ref(content.firstElementChild).
               /* Load weather component */
               inject({ item:JSON.parse(storage.weatherJSON) }).
-              addTag('news:weather').
+              tag.add('news:weather').
               load();
           });
           xhr.send();
@@ -116,10 +118,10 @@
             document.createElement('div'),
             content.firstChild
           );
-          self.getRef(content.firstElementChild).
+          self.ref(content.firstElementChild).
             /* Load weather component */
             inject({ item:JSON.parse(storage.weatherJSON) }).
-            addTag('news:weather').
+            tag.add('news:weather').
             load();
         }
       });
@@ -127,7 +129,7 @@
 
     function rss() {
 
-      reload.classList.add('spin');
+      refs.reload.class.add('spin');
       refs.content.empty();
       refs.colophon.empty();
       let xhr=new XMLHttpRequest();
@@ -140,11 +142,6 @@
       xhr.addEventListener('load',function() {
         if (!storage.query)
           weather();
-        reload.classList.remove('spin');
-        refs.colophon.
-          /* Load colophon component */
-          addTag('news:colophon').
-          load();
         let xml=xhr.responseXML,
             stamp=$('lastBuildDate',xml).shift(),
             url=$('channel>link',xml).shift();
@@ -152,31 +149,39 @@
           storage.newsXML=xhr.responseText;
         $('channel>item',xml).forEach(function(item) {
           content.appendChild(document.createElement('div'));
-          self.getRef(content.lastElementChild).
+          self.ref(content.lastElementChild).
             inject({ item }).
-            addTag('news:item').
+            tag.add('news:item').
             load();
         });
+        refs.colophon.
+          /* Load colophon component */
+          tag.add('news:colophon').
+          load();
+        refs.reload.class.remove('spin');
       });
-      xhr.addEventListener('error',function() {
+      function offline() {
+        clearTimeout(timeout);
         refs.content.
           /* Display offline message */
-          addTag('news:offline').
+          tag.add('news:offline').
           load();
         if (storage.newsXML) {
           let xml=(new DOMParser).
             parseFromString(storage.newsXML,'application/xml');
           $('channel>item',xml).forEach(function(item) {
             content.appendChild(document.createElement('div'));
-            self.getRef(content.lastElementChild).
+            self.ref(content.lastElementChild).
               /* Load news item component */
               inject({ item }).
-              addTag('news:item').
+              tag.add('news:item').
               load();
           });
         }
-        reload.classList.remove('spin');
-      });
+        refs.reload.class.remove('spin');
+      }
+      xhr.addEventListener('error',offline);
+      xhr.addEventListener('timeout',offline);
       xhr.send();
     }
 
@@ -185,7 +190,7 @@
         /* Display search form input element */
         let title=refs.title.expose(),
             search=refs.search.expose(),
-            html=title.innerHTML;
+            html=refs.title.html();
         refs.title.empty();
         search.style.display='none';
         title.appendChild(
@@ -198,7 +203,7 @@
         input.spellcheck=false;
         if (storage.query)
           input.value=storage.query;
-        this.getRef(input).
+        this.ref(input).
           /* Update news page with user query */
           on('change',function() {
             if (input.value.length) {
@@ -206,16 +211,14 @@
               rss();
             }
             else
-              this.getRef(cancel).
-                emit('click');
+              this.ref(cancel).emit('click');
           });
         /* Autofocus on element */
         input.focus();
-        this.getRef(cancel).
+        this.ref(cancel).
           /* Cancel search */
           on('click',function() {
-            refs.title.empty();
-            title.innerHTML=html;
+            refs.title.empty().html(html);
             search.style.display='block';
             delete storage.query;
             rss();
@@ -228,9 +231,7 @@
 
     refs.reload.
       /* Reload news page */
-      on('click',function() {
-        rss();
-      }).
+      on('click',rss).
       emit('click');
 
     refs.darkmode.
