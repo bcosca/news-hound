@@ -21,7 +21,7 @@
     "brunch": "^2.10.17",
     "cssnano-brunch": "^1.1.8",
     "eslint-brunch": "^3.12.0",
-    "roadshow-brunch": "^0.2.0",
+    "roadshow-brunch": "^0.3.1",
     "terser-brunch": "^3.0.0"
   },
   "dependencies": {}

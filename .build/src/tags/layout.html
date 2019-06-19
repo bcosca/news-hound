@@ -1,5 +1,5 @@
 <news:layout>
-  <main tag="cc:main" ref="main">
+  <main tag="cc:main">
     <header tag="cc:sheet" class="top" ref="top">
       <div tag="cc:appbar" class="${ props.app.storage.darkMode?'reverse':'primary' }">
         <span class="title mx-1 relative" ref="title">
@@ -65,12 +65,10 @@
 
     this.inject({
       layout:this,
-      main:refs.main,
       zoom:refs.imgzoom
     });
 
-    let main=refs.main.expose(),
-        reload=refs.icon.expose(),
+    let reload=refs.icon.expose(),
         content=refs.content.expose();
 
     function weather() {
@@ -129,7 +127,7 @@
 
     function rss() {
 
-      refs.reload.class.add('spin');
+      refs.reload.class.add('spin infinite');
       refs.content.empty();
       refs.colophon.empty();
       let xhr=new XMLHttpRequest();
@@ -158,7 +156,7 @@
           /* Load colophon component */
           tag.add('news:colophon').
           load();
-        refs.reload.class.remove('spin');
+        refs.reload.class.remove('spin infinite');
       });
       function offline() {
         clearTimeout(timeout);
@@ -178,7 +176,7 @@
               load();
           });
         }
-        refs.reload.class.remove('spin');
+        refs.reload.class.remove('spin infinite');
       }
       xhr.addEventListener('error',offline);
       xhr.addEventListener('timeout',offline);

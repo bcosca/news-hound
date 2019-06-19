@@ -27,21 +27,16 @@
       <a tag="cc:button" class="primary light solid ml-1" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3VSK6CKUYZRBL&source=url" target="_blank">Donate</a>
     </div>
   </div>
-  <style>
-  .social {
-    filter:grayscale(100%);
-  }
-  .social:hover {
-    filter:grayscale(0);
-  }
-  </style>
   <script>
   props.social={
-    'facebook':['Facebook','https://www.facebook.com/sharer.php?u=[url]'],
+    'facebook':['Facebook','https://www.facebook.com/share.php?u=[url]'],
     'twitter':['Twitter','https://twitter.com/share?url=[url]&text=[title]'],
     'google-plus':['Google+','https://plus.google.com/share?url=[url]'],
     'linkedin':['LinkedIn','https://www.linkedin.com/shareArticle?url=[url]&title=[title]'],
-    'tumblr':['Tumblr','https://www.tumblr.com/share/link?url=[url]&name=[title]&description=[desc]']
+    'pinterest':['Pinterest','http://pinterest.com/pin/create/link/?url=[url]'],
+    'reddit':['Reddit','http://www.reddit.com/submit?url=[url]&title=[title]'],
+    'tumblr':['Tumblr','https://www.tumblr.com/share/link?url=[url]&name=[title]&description=[desc]'],
+    'stumbleupon':['StumbleUpon','http://www.stumbleupon.com/submit?url=[url]&title=[title]'],
   };
   </script>
 </news:colophon>
