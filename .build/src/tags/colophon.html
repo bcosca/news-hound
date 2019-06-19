@@ -1,11 +1,20 @@
 <news:colophon>
   <div class="reverse p-1">
-    <div class="m-1">
-      <div><strong>About News Hound</strong></div>
-      <div class="small">Version ${ props.app.manifest.version }</div>
+    <div class="flex flex-center m-1">
+      <div class="mr-auto">
+        <big class="text-secondary"><strong>${ props.app.brand }</strong></big> ${ props.app.manifest.version }
+      </div>
+      <a class="mx-1" href="https://chrome.google.com/webstore/detail/news-hound/oldaaikodjfajkjopadhhbkbmlgejdpb" target="_blank" title="Chrome Web Store">
+        <img class="noflex" src="pub/img/chrome.png" height="24" width="24">
+      </a>
+      <a class="mx-1" href="https://addons.mozilla.org/en-US/firefox/addon/news-hound/" target="_blank" title="Firefox Add-ons">
+        <img class="noflex" src="pub/img/firefox.png" height="24" width="24">
+      </a>
+      <a class="mx-1" href="https://github.com/bcosca/news-hound" target="_blank" title="Github">
+        <img class="noflex" src="pub/img/github.png" height="24" width="24">
+      </a>
     </div>
-    <p class="small m-1">News Hound provides up-to-date news aggregated from thousands of blogs, newspapers, and magazines around the Web.</p>
-    <div class="m-1">Support further development of ${ props.app.brand }. Your donations help keep this project ad-free.</div>
+    <div class="mx-3 my-1">Support further development of ${ props.app.brand }. Your donations help keep this project ad-free.</div>
     <div class="flex p-1">
       <a tag="cc:button" class="ml-auto mr-1" href="https://www.patreon.com/bePatron?u=20757210" target="_blank">Become a Patron!</a>
       <a tag="cc:button" class="primary light solid ml-1" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3VSK6CKUYZRBL&source=url" target="_blank">Donate</a>
