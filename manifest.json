@@ -15,6 +15,7 @@
 	"icons":{
     "128":"/pub/icons/icon-128.png"
 	},
+  "display":"standalone",
 	"manifest_version":2,
 	"permissions":[
     "geolocation",

@@ -1,16 +1,23 @@
 <news:colophon>
+  <div class="flex flex-middle px-2 pt-1 pb-3">
+    #each (Object.keys(props.social) as key) {
+    <a class="mx-1" href="${ props.social[key][1].replace('[url]',encodeURIComponent('https://chrome.google.com/webstore/detail/news-hound/oldaaikodjfajkjopadhhbkbmlgejdpb')).replace('[title]',encodeURIComponent(props.app.brand)).replace('[desc]',encodeURIComponent(props.app.manifest.description)) }" target="_blank" title="${ props.social[key][0] }">
+      <img class="noflex social" src="pub/img/social/${ key }.png" height="32" width="32">
+    </a>
+    }
+  </div>
   <div class="reverse p-1">
     <div class="flex flex-center m-1">
       <div class="mr-auto">
         <big class="text-secondary"><strong>${ props.app.brand }</strong></big> ${ props.app.manifest.version }
       </div>
-      <a class="mx-1" href="https://chrome.google.com/webstore/detail/news-hound/oldaaikodjfajkjopadhhbkbmlgejdpb" target="_blank" title="Chrome Web Store">
+      <a class="ml-2" href="https://chrome.google.com/webstore/detail/news-hound/oldaaikodjfajkjopadhhbkbmlgejdpb" target="_blank" title="Chrome Web Store">
         <img class="noflex" src="pub/img/chrome.png" height="24" width="24">
       </a>
-      <a class="mx-1" href="https://addons.mozilla.org/en-US/firefox/addon/news-hound/" target="_blank" title="Firefox Add-ons">
+      <a class="ml-2" href="https://addons.mozilla.org/en-US/firefox/addon/news-hound/" target="_blank" title="Firefox Add-ons">
         <img class="noflex" src="pub/img/firefox.png" height="24" width="24">
       </a>
-      <a class="mx-1" href="https://github.com/bcosca/news-hound" target="_blank" title="Github">
+      <a class="ml-2" href="https://github.com/bcosca/news-hound" target="_blank" title="Github">
         <img class="noflex" src="pub/img/github.png" height="24" width="24">
       </a>
     </div>
@@ -20,4 +27,21 @@
       <a tag="cc:button" class="primary light solid ml-1" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3VSK6CKUYZRBL&source=url" target="_blank">Donate</a>
     </div>
   </div>
+  <style>
+  .social {
+    filter:grayscale(100%);
+  }
+  .social:hover {
+    filter:grayscale(0);
+  }
+  </style>
+  <script>
+  props.social={
+    'facebook':['Facebook','https://www.facebook.com/sharer.php?u=[url]'],
+    'twitter':['Twitter','https://twitter.com/share?url=[url]&text=[title]'],
+    'google-plus':['Google+','https://plus.google.com/share?url=[url]'],
+    'linkedin':['LinkedIn','https://www.linkedin.com/shareArticle?url=[url]&title=[title]'],
+    'tumblr':['Tumblr','https://www.tumblr.com/share/link?url=[url]&name=[title]&description=[desc]']
+  };
+  </script>
 </news:colophon>

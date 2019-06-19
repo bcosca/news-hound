@@ -1,7 +1,8 @@
-<news:item tag="cc:card" class="flex my-2">
+<news:item tag="cc:card" class="news-item flex my-2">
   <style>
-  .card {
+  .news-item {
     background-color:var(--surface) !important;
+    position:relative;
   }
   a {
     color:${ props.css.foreground(props.theme.surface) };
@@ -41,18 +42,10 @@
           message(diff>0?'timeTomorrow':'timeYesterday'):
           format(
             when,
-            format(
-              message('time'+i[0].toUpperCase()+i.substring(1)),
-              unit
-            )
+            format(message('time'+i[0].toUpperCase()+i.substring(1)),unit)
           );
       }
-    return format(
-      when,
-      format(
-        message('timeSecond'),
-        Math.trunc(abs))
-    );
+    return format(when,format(message('timeSecond'),Math.trunc(abs)));
   }
   let $=roadshow.$,
       storage=window.localStorage;
@@ -103,12 +96,11 @@
     ref.
       attr({ class:'text-muted' }).
       attr.remove('color');
-    if (!element.parentElement || element.parentElement.isSameNode(headline)) {
+    if (!element.parentElement || element.parentElement.isSameNode(headline))
       /* Add human-readable timestamp */
       ref.
         class.add('nobr small').
         text(ref.text()+' · '+timeDiff(pub.getTime()/1e3));
-    }
   }.bind(this));
 
   /* Wrap news item in a DIV element */
@@ -119,6 +111,7 @@
   item.appendChild(div);
 
   if (photo) {
+    /* News item contains URL of photo */
     let img=document.createElement('img');
     this.ref(img).
       attr({
