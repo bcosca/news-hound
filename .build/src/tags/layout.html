@@ -6,7 +6,7 @@
           <img src="pub/img/logo.png" height="20">
         </span>
         <button type="button" class="mx-1" ref="search" title="Search"><i class="icon icon-search infinite"></i></button>
-        <button type="button" class="mx-1" ref="darkmode" title="Toggle dark mode"><i class="icon ${ props.app.storage.darkMode?'icon-invert-colors-off':'icon-invert-colors' } infinite"></i></button>
+        <button type="button" class="mx-1" ref="darkmode" title="Toggle dark mode"><i class="icon ${ props.app.storage.darkMode?'icon-invert-colors-off':'icon-invert-colors' }"></i></button>
         <button type="button" class="mx-1" ref="reload" title="Refresh"><i class="icon icon-refresh infinite" ref="icon"></i></button>
       </div>
       <template id="search">
@@ -68,8 +68,7 @@
       zoom:refs.imgzoom
     });
 
-    let reload=refs.icon.expose(),
-        content=refs.content.expose();
+    let content=refs.content.expose();
 
     function weather() {
       /* Retrieve latitude/longitude using geolocation API */
@@ -98,11 +97,7 @@
             storage.location=JSON.stringify(geo);
             storage.weatherDate=now-now%age;
             storage.weatherJSON=xhr.responseText;
-            content.insertBefore(
-              document.createElement('div'),
-              content.firstChild
-            );
-            self.ref(content.firstElementChild).
+            self.ref(refs.content.prepend(document.createElement('div'))).
               /* Load weather component */
               inject({ item:JSON.parse(storage.weatherJSON) }).
               tag.add('news:weather').
@@ -110,26 +105,21 @@
           });
           xhr.send();
         }
-        else {
+        else
           /* Retrieve cached data */
-          content.insertBefore(
-            document.createElement('div'),
-            content.firstChild
-          );
-          self.ref(content.firstElementChild).
+          self.ref(refs.content.prepend(document.createElement('div'))).
             /* Load weather component */
             inject({ item:JSON.parse(storage.weatherJSON) }).
             tag.add('news:weather').
             load();
-        }
       });
     }
 
     function rss() {
 
       refs.reload.class.add('spin infinite');
-      refs.content.empty();
-      refs.colophon.empty();
+      refs.content.unload();
+      refs.colophon.unload();
       let xhr=new XMLHttpRequest();
       xhr.open(
         'GET',
@@ -146,8 +136,7 @@
         if (!storage.newsXML)
           storage.newsXML=xhr.responseText;
         $('channel>item',xml).forEach(function(item) {
-          content.appendChild(document.createElement('div'));
-          self.ref(content.lastElementChild).
+          self.ref(refs.content.append(document.createElement('div'))).
             inject({ item }).
             tag.add('news:item').
             load();
@@ -168,14 +157,17 @@
           let xml=(new DOMParser).
             parseFromString(storage.newsXML,'application/xml');
           $('channel>item',xml).forEach(function(item) {
-            content.appendChild(document.createElement('div'));
-            self.ref(content.lastElementChild).
+            self.ref(refs.content.append(document.createElement('div'))).
               /* Load news item component */
               inject({ item }).
               tag.add('news:item').
               load();
           });
         }
+        refs.colophon.
+          /* Load colophon component */
+          tag.add('news:colophon').
+          load();
         refs.reload.class.remove('spin infinite');
       }
       xhr.addEventListener('error',offline);
@@ -187,15 +179,11 @@
       on('click',function() {
         /* Display search form input element */
         let title=refs.title.expose(),
-            search=refs.search.expose(),
             html=refs.title.html();
-        refs.title.empty();
-        search.style.display='none';
-        title.appendChild(
-          document.getElementById('search').
-            cloneNode(true).
-            content
-        );
+        refs.title.
+          unload().
+          append($('#search').shift().cloneNode(true).content);
+        refs.search.css({ display:'none' });
         let input=$('[type="search"]',title).shift(),
             cancel=$('button',title).shift();
         input.spellcheck=false;
@@ -216,16 +204,17 @@
         this.ref(cancel).
           /* Cancel search */
           on('click',function() {
-            refs.title.empty().html(html);
-            search.style.display='block';
+            refs.title.
+              unload().
+              html(html);
+            refs.search.css({ display:'block' });
             delete storage.query;
             rss();
           });
       });
 
     if (storage.query)
-      refs.search.
-        emit('click');
+      refs.search.emit('click');
 
     refs.reload.
       /* Reload news page */

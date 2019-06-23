@@ -1,34 +1,38 @@
 <news:colophon>
-  <div class="flex flex-middle px-2 pt-1 pb-3">
-    #each (Object.keys(props.social) as key) {
-    <a class="mx-1" href="${ props.social[key][1].replace('[url]',encodeURIComponent('https://chrome.google.com/webstore/detail/news-hound/oldaaikodjfajkjopadhhbkbmlgejdpb')).replace('[title]',encodeURIComponent(props.app.brand)).replace('[desc]',encodeURIComponent(props.app.manifest.description)) }" target="_blank" title="${ props.social[key][0] }">
-      <img class="noflex social" src="pub/img/social/${ key }.png" height="32" width="32">
+  <div class="small text-center share-header pt-2">Spread the love · Share ${ props.app.brand } with your friends</div>
+  <div class="flex flex-middle pt-1 pb-2 mb-2">
+    #each (Object.keys(this.social) as key) {
+    <a class="mx-1" href="${ this.social[key][1].replace('[url]',encodeURIComponent('https://chrome.google.com/webstore/detail/news-hound/oldaaikodjfajkjopadhhbkbmlgejdpb')).replace('[title]',encodeURIComponent(props.app.brand)).replace('[desc]',encodeURIComponent(props.app.manifest.description)) }" target="_blank" title="${ this.social[key][0] }">
+      <img src="pub/img/social/${ key }.png" height="32" width="32">
     </a>
     }
   </div>
-  <div class="reverse p-1">
-    <div class="flex flex-center m-1">
-      <div class="mr-auto">
-        <big class="text-secondary"><strong>${ props.app.brand }</strong></big> ${ props.app.manifest.version }
+  <div class="reverse">
+    <div class="p-1">
+      <div class="flex flex-center m-1">
+        <div class="mr-auto">
+          <big class="text-secondary"><strong>${ props.app.brand }</strong></big> ${ props.app.manifest.version }
+        </div>
+        #each (Object.keys(this.links) as key) {
+        <a class="ml-2" href="${ this.links[key][1] }" target="_blank" title="${ this.links[key][0] }">
+          <img src="pub/img/${ key }.png" height="24" width="24">
+        </a>
+        }
       </div>
-      <a class="ml-2" href="https://chrome.google.com/webstore/detail/news-hound/oldaaikodjfajkjopadhhbkbmlgejdpb" target="_blank" title="Chrome Web Store">
-        <img class="noflex" src="pub/img/chrome.png" height="24" width="24">
-      </a>
-      <a class="ml-2" href="https://addons.mozilla.org/en-US/firefox/addon/news-hound/" target="_blank" title="Firefox Add-ons">
-        <img class="noflex" src="pub/img/firefox.png" height="24" width="24">
-      </a>
-      <a class="ml-2" href="https://github.com/bcosca/news-hound" target="_blank" title="Github">
-        <img class="noflex" src="pub/img/github.png" height="24" width="24">
-      </a>
-    </div>
-    <div class="mx-3 my-1">Support further development of ${ props.app.brand }. Your donations help keep this project ad-free.</div>
-    <div class="flex p-1">
-      <a tag="cc:button" class="ml-auto mr-1" href="https://www.patreon.com/bePatron?u=20757210" target="_blank">Become a Patron!</a>
-      <a tag="cc:button" class="primary light solid ml-1" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3VSK6CKUYZRBL&source=url" target="_blank">Donate</a>
+      <div class="m-1">Support further development of this ${ /Chrome/.test(navigator.userAgent)?'Chrome extension':'Firefox add-on' }. Your donations help keep this project ad-free.</div>
+      <div class="flex p-1">
+        <a tag="cc:button" class="ml-auto mr-1" href="https://www.patreon.com/bePatron?u=20757210" target="_blank">Become a Patron!</a>
+        <a tag="cc:button" class="primary light solid ml-1" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3VSK6CKUYZRBL&source=url" target="_blank">Donate</a>
+      </div>
     </div>
   </div>
+  <style>
+  .share-header {
+    font-weight:600;
+  }
+  </style>
   <script>
-  props.social={
+  this.social={
     'facebook':['Facebook','https://www.facebook.com/share.php?u=[url]'],
     'twitter':['Twitter','https://twitter.com/share?url=[url]&text=[title]'],
     'google-plus':['Google+','https://plus.google.com/share?url=[url]'],
@@ -37,6 +41,11 @@
     'reddit':['Reddit','http://www.reddit.com/submit?url=[url]&title=[title]'],
     'tumblr':['Tumblr','https://www.tumblr.com/share/link?url=[url]&name=[title]&description=[desc]'],
     'stumbleupon':['StumbleUpon','http://www.stumbleupon.com/submit?url=[url]&title=[title]'],
+  };
+  this.links={
+    'chrome':['Chrome Web Store','https://chrome.google.com/webstore/detail/news-hound/oldaaikodjfajkjopadhhbkbmlgejdpb'],
+    'firefox':['Firefox Add-ons','https://addons.mozilla.org/en-US/firefox/addon/news-hound/'],
+    'github':['Github','https://github.com/bcosca/news-hound']
   };
   </script>
 </news:colophon>

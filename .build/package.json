@@ -1,6 +1,6 @@
 {
   "name": "news-hound",
-  "version": "0.9.8",
+  "version": "0.9.9",
   "description": "News Hound: World-wide aggregated news feed",
   "keywords": [
     "news",
@@ -19,9 +19,9 @@
   },
   "devDependencies": {
     "brunch": "^2.10.17",
-    "cssnano-brunch": "^1.1.8",
+    "cssnano-brunch": "^1.2.0",
     "eslint-brunch": "^3.12.0",
-    "roadshow-brunch": "^0.3.1",
+    "roadshow-brunch": "^0.3.2",
     "terser-brunch": "^3.0.0"
   },
   "dependencies": {}

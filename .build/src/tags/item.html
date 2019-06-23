@@ -59,13 +59,12 @@
     html(desc.replace(/<(\/)?ol>/,'<$1ul>').replace(/&nbsp;/g,' '));
   let headline=document.createElement('div'),
       first;
-  this.ref(headline).
-    attr({ class:'mb-1' });
-  if (/^ul/i.test(tmp.content.firstElementChild.tagName)) {
+  refs.headline=this.ref(headline);
+  if (tmp.content.firstElementChild.matches('ul')) {
     /* Restructure HTML */
     first=$('li:first-child',tmp.content).shift();
     while (first.firstChild)
-      headline.appendChild(first.firstChild);
+      refs.headline.append(first.firstChild);
     tmp.content.insertBefore(headline,tmp.content.firstElementChild);
     first.remove();
     /* Remove link to Google News page */
@@ -74,9 +73,9 @@
   else {
     while (tmp.content.firstChild) {
       if (tmp.content.firstChild.nodeType==window.Node.ELEMENT_NODE &&
-          /^p/i.test(tmp.content.firstChild.tagName))
+          tmp.content.firstChild.matches('p'))
         break;
-      headline.appendChild(tmp.content.firstChild);
+      refs.headline.append(tmp.content.firstChild);
     }
     tmp.content.insertBefore(headline,tmp.content.firstElementChild);
   }
@@ -86,29 +85,29 @@
     element.remove();
   });
   $('p,ul',tmp.content).forEach(function(element) {
-    element.setAttribute('class','small my-0');
+    let ref=this.ref(element);
+    ref.class.add('small mt-1 mb-0');
     if (element.matches('ul'))
-      this.ref(element).
-        class.add('pl-2');
+      ref.class.add('pl-2');
   }.bind(this));
   $('font',tmp.content).forEach(function(element) {
     let ref=this.ref(element);
     ref.
-      attr({ class:'text-muted' }).
+      attr({ class:'text-muted nobr clip' }).
       attr.remove('color');
     if (!element.parentElement || element.parentElement.isSameNode(headline))
       /* Add human-readable timestamp */
       ref.
-        class.add('nobr small').
+        class.add('small').
         text(ref.text()+' · '+timeDiff(pub.getTime()/1e3));
   }.bind(this));
 
-  /* Wrap news item in a DIV element */
+  /* Wrap news item in a div element */
   let item=this.expose(),
       div=document.createElement('div');
   div.setAttribute('class','grow p-2');
   div.appendChild(tmp.content);
-  item.appendChild(div);
+  this.append(div);
 
   if (photo) {
     /* News item contains URL of photo */
@@ -125,26 +124,31 @@
         item.appendChild(img);
       }).
       on('click',function() {
+        /* Display dialog with enlarged photo */
         let zoom=props.zoom.expose(),
             ref=props.zoom.find('.card').shift();
-        ref.empty();
-        let card=ref.expose(),
-            clone=card.appendChild(img.cloneNode());
-        this.ref(clone).
+        ref.
+          unload().
+          class.add('relative');
+        let card=ref.expose();
+        this.ref(card.appendChild(img.cloneNode())).
           attr({
             src:photo.getAttribute('url').replace(/(\-[wh])150/g,'$1448'),
             width:448,
             height:448,
-            class:'cover m-0 close'
-          }).
-          on('click',function(e) {
+            class:'cover m-0 close',
+            style:'cursor:default'
+          });
+        refs.close=this.ref(ref.append(document.createElement('button')));
+        refs.close.
+          class.add('close round surface absolute top right m-2').
+          on('click',function() {
             props.zoom.emit('sheet:hide');
           });
-        clone=card.appendChild(headline.cloneNode(true));
-        this.ref(clone).
-          attr({
-            class:'p-2'
-          });
+        this.ref(refs.close.append(document.createElement('i'))).
+          class.add('icon icon-close icon-fw p-1');
+        this.ref(card.appendChild(headline.cloneNode(true))).
+          class.add('p-2');
         this.ref(zoom).
           class.add('active');
       });
