@@ -23,3 +23,8 @@ Dark mode
 Your donations help keep this project ad-free.
 
 [Donate via Paypal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3VSK6CKUYZRBL&source=url)
+
+## Support on Beerpay
+Hey dude! Help me out for a couple of :beers:!
+
+[![Beerpay](https://beerpay.io/bcosca/news-hound/badge.svg?style=beer-square)](https://beerpay.io/bcosca/news-hound)  [![Beerpay](https://beerpay.io/bcosca/news-hound/make-wish.svg?style=flat-square)](https://beerpay.io/bcosca/news-hound?focus=wish)
